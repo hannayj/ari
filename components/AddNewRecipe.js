@@ -1,25 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard, Image, FlatList, SafeAreaView, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
+import * as firebase from 'firebase'
+
+const firebaseConfig = {
+    apiKey: Constants.manifest.extra.dbKey,
+    authDomain: "rn-ari.firebaseapp.com",
+    databaseURL: "https://rn-ari-default-rtdb.firebaseio.com",
+    projectId: "rn-ari",
+    storageBucket: "rn-ari.appspot.com",
+    messagingSenderId: "746753334312",
+}
+
+//Initialize firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
 export default function AddNewRecipe({ route, navigation }) {
-    const [url, setUrl] = useState('')
-    const [recipe, setRecipe] = useState({
+
+    const emptyRecipe = {
         name: '',
         ingredients: [],
         instructions: [],
         image: 'www'
-    })
-    const [modifiedRecipe, setModifiedRecipe] = useState(recipe)
-    const [modifiedIngredient, setModifiedIngredient] = useState('')
-    const key = Constants.manifest.extra.apiKey
+    }
+
+    const [url, setUrl] = useState('')
+    const [recipe, setRecipe] = useState(emptyRecipe)
+    //const [modifiedRecipe, setModifiedRecipe] = useState(recipe)
+    const [items, setItems] = useState([])
+    //const [modifiedIngredient, setModifiedIngredient] = useState('')
+
+    /*useEffect(() => {
+        firebase.database().ref('items/').on('value', snapshot => {
+            const data = snapshot.val()
+            console.log(data)
+            //const prods = Object.values(data);
+            //console.log(prods)
+            //setItems(prods)
+        })
+    }, [])*/
+
+    const saveItem = () => {
+        firebase.database().ref('items/').push(
+            {
+                'name': recipe.name,
+                'ingredients': recipe.ingredients,
+                'instructions': recipe.instructions,
+                'image': recipe.image
+            }
+        )
+        //updateList()
+        setRecipe(emptyRecipe)
+        setUrl('')
+        Alert.alert('Recipe saved')
+    }
+
+    const updateList = () => {
+        firebase.database().ref('items/').on('value', snapshot => {
+            const data = snapshot.val()
+            const prods = Object.values(data);
+            setItems(prods)
+        })
+    }
 
     const fetchRecipeInfo = () => {
         fetch('https://mycookbook-io1.p.rapidapi.com/recipes/rapidapi', {
             method: "POST",
             headers: {
                 'content-type': 'application/xml',
-                'x-rapidapi-key': key,
+                'x-rapidapi-key': Constants.manifest.extra.apiKey,
                 'x-rapidapi-host': 'mycookbook-io1.p.rapidapi.com'
             },
             body: url
@@ -48,19 +99,18 @@ export default function AddNewRecipe({ route, navigation }) {
 
     const editItem = (index, item) => {
         //console.log(index)
-        let ingredientsArray = [...modifiedRecipe.ingredients]
+        let ingredientsArray = [...recipe.ingredients]
+        console.log(ingredientsArray)
+        //console.log(...modifiedRecipe)
         //console.log(ingredientsArray[index])
         ingredientsArray[index] = item
-        //console.log({ ...modifiedRecipe, ingredients: ingredientsArray })
-        setModifiedRecipe({ ...modifiedRecipe, ingredients: ingredientsArray })
+        console.log({ ...recipe, ingredients: ingredientsArray })
+        setRecipe({ ...recipe, ingredients: ingredientsArray })
     }
 
     const editInstructions = () => {
     }
 
-    const saveToDatabase = () => {
-        console.log(modifiedRecipe)
-    }
 
     if (recipe.name == '') {
         return (
@@ -115,7 +165,7 @@ export default function AddNewRecipe({ route, navigation }) {
                         />
                         <Button
                             title='Save recipe'
-                            onPress={saveToDatabase}
+                            onPress={saveItem}
                         />
                     </View>
                 </ScrollView>
@@ -145,7 +195,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     listInput: {
-        width: '70%',
+        width: '95%',
         height: 30,
         fontSize: 16,
         borderColor: 'gray',
