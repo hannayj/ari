@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard, Image, FlatList, SafeAreaView, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
 
-export default function AddNewRecipe({ route }) {
+export default function AddNewRecipe({ route, navigation }) {
     const [url, setUrl] = useState('')
     const [recipe, setRecipe] = useState({
         name: '',
@@ -10,6 +10,8 @@ export default function AddNewRecipe({ route }) {
         instructions: [],
         image: 'www'
     })
+    const [modifiedRecipe, setModifiedRecipe] = useState(recipe)
+    const [modifiedIngredient, setModifiedIngredient] = useState('')
     const key = Constants.manifest.extra.apiKey
 
     const fetchRecipeInfo = () => {
@@ -44,12 +46,20 @@ export default function AddNewRecipe({ route }) {
             });
     }
 
-    const editInstructions = () => {
+    const editItem = (index, item) => {
+        //console.log(index)
+        let ingredientsArray = [...modifiedRecipe.ingredients]
+        //console.log(ingredientsArray[index])
+        ingredientsArray[index] = item
+        //console.log({ ...modifiedRecipe, ingredients: ingredientsArray })
+        setModifiedRecipe({ ...modifiedRecipe, ingredients: ingredientsArray })
+    }
 
+    const editInstructions = () => {
     }
 
     const saveToDatabase = () => {
-
+        console.log(modifiedRecipe)
     }
 
     if (recipe.name == '') {
@@ -77,10 +87,13 @@ export default function AddNewRecipe({ route }) {
                         style={styles.flatList}
                         keyExtractor={(item, index) => String(index)}
                         data={recipe.ingredients}
-                        renderItem={({ item }) =>
+                        renderItem={({ item, index }) =>
                             <View style={styles.listItem}>
-                                <Text style={styles.listItemText}>{item}</Text>
-                                <Text style={styles.listItemText}>Edit</Text>
+                                <TextInput
+                                    style={styles.listInput}
+                                    onChangeText={modifiedIngredient => editItem(index, modifiedIngredient)}
+                                    defaultValue={item}
+                                />
                             </View>
                         }
                     />
@@ -88,9 +101,9 @@ export default function AddNewRecipe({ route }) {
                     <FlatList
                         keyExtractor={(item, index) => String(index)}
                         data={recipe.instructions}
-                        renderItem={({ item }) =>
+                        renderItem={({ item, index }) =>
                             <View>
-                                <Text style={styles.listItemText}>{item}</Text>
+                                <Text style={styles.listItemText}>{index + 1}. {item}</Text>
                             </View>
                         }
                     />
@@ -131,10 +144,17 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
     },
+    listInput: {
+        width: '70%',
+        height: 30,
+        fontSize: 16,
+        borderColor: 'gray',
+        borderWidth: 1,
+    },
     listItem: {
         fontSize: 18,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-around'
     },
     listItemText: {
         fontSize: 18,
