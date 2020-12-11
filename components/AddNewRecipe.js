@@ -134,7 +134,6 @@ export default function AddNewRecipe({ route, navigation }) {
                     <Text>{recipe.name}</Text>
                     <Text>Ingredients:</Text>
                     <FlatList
-                        style={styles.flatList}
                         keyExtractor={(item, index) => String(index)}
                         data={recipe.ingredients}
                         renderItem={({ item, index }) =>

@@ -6,6 +6,7 @@ import HomeScreen from './components/HomeScreen'
 import AddNewRecipe from './components/AddNewRecipe'
 import EditMenus from './components/EditMenus'
 import CreateShoppingList from './components/CreateShoppingList'
+import EditRecipe from './components/EditRecipe'
 
 const Stack = createStackNavigator()
 
@@ -16,6 +17,7 @@ export default function App() {
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
         <Stack.Screen name='Recipes' component={AddNewRecipe} />
         <Stack.Screen name='Menus' component={EditMenus} />
+        <Stack.Screen name='Edit Recipe' component={EditRecipe} />
         <Stack.Screen name='Shopping list' component={CreateShoppingList} />
       </Stack.Navigator>
     </NavigationContainer>
