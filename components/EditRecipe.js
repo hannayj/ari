@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, TextInput, ScrollView, Alert } from 'react-native';
 import Constants from 'expo-constants';
 import * as firebase from 'firebase'
 
@@ -19,8 +19,8 @@ if (!firebase.apps.length) {
 
 
 export default function EditRecipe({ route, navigation }) {
-    const { index } = route.params
     const { item } = route.params
+    const [recipe, setRecipe] = useState(item)
 
     const editItem = (index, item) => {
         //console.log(index)
@@ -34,21 +34,41 @@ export default function EditRecipe({ route, navigation }) {
     }
     
     const editInstructions = (index, item) => {
-        console.log('Hep')
+        let instructionsArray = [...recipe.instructions]
+        console.log(instructionsArray)
+        instructionsArray[index] = item
+        console.log({ ...recipe, instructions: instructionsArray })
+        setRecipe({ ...recipe, instructions: instructionsArray })
     }
     
     const saveItem = () => {
-        
+        firebase.database().ref('items/').child(recipe.key).update(
+            {
+                'name': recipe.name,
+                'ingredients': recipe.ingredients,
+                'instructions': recipe.instructions,
+                'image': recipe.image,
+            }
+        )
+        Alert.alert('Changes saved to database')
+        navigation.navigate('Menus')
+    }
+
+    const cancel = () => {
+        setRecipe(item)
+        navigation.navigate('Menus')
     }
 
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
-                <Text>{item.name}</Text>
+                {console.log('recipe', recipe.name)}
+                {console.log('key', recipe.key)}
+               
+                <Text>{recipe.name}</Text>
                 <Text>Ingredients:</Text>
                 <FlatList
-                    //keyExtractor={index}
-                    data={item.ingredients}
+                    data={recipe.ingredients}
                     renderItem={({ item, index }) =>
                         <View style={styles.listItem}>
                             <TextInput
@@ -61,8 +81,7 @@ export default function EditRecipe({ route, navigation }) {
                 />
                 <Text>Instructions:</Text>
                 <FlatList
-                    //keyExtractor={index}
-                    data={item.instructions}
+                    data={recipe.instructions}
                     renderItem={({ item, index }) =>
                         <View style={styles.listItem}>
                             <TextInput
@@ -82,7 +101,7 @@ export default function EditRecipe({ route, navigation }) {
                 />
                 <Button
                     title='CANCEL'
-                    onPress={() => navigation.navigate('Menus')}
+                    onPress={cancel}
                 />
                 </View>
             </ScrollView>
