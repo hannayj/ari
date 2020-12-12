@@ -1,21 +1,6 @@
 import React, { useState, useEffect }from 'react';
 import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
-import Constants from 'expo-constants';
-import * as firebase from 'firebase'
-
-const firebaseConfig = {
-    apiKey: Constants.manifest.extra.dbKey,
-    authDomain: "rn-ari.firebaseapp.com",
-    databaseURL: "https://rn-ari-default-rtdb.firebaseio.com",
-    projectId: "rn-ari",
-    storageBucket: "rn-ari.appspot.com",
-    messagingSenderId: "746753334312",
-}
-
-//Initialize firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+import firebase from '../util/firebase'
 
 export default function EditMenus({ route, navigation }) {
     const [items, setItems] = useState([])

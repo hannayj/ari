@@ -1,21 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard, Image, FlatList, SafeAreaView, ScrollView } from 'react-native';
-import Constants from 'expo-constants';
-import * as firebase from 'firebase'
-
-const firebaseConfig = {
-    apiKey: Constants.manifest.extra.dbKey,
-    authDomain: "rn-ari.firebaseapp.com",
-    databaseURL: "https://rn-ari-default-rtdb.firebaseio.com",
-    projectId: "rn-ari",
-    storageBucket: "rn-ari.appspot.com",
-    messagingSenderId: "746753334312",
-}
-
-//Initialize firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+import firebase from '../util/firebase'
 
 export default function AddNewRecipe({ route, navigation }) {
 
@@ -32,16 +17,6 @@ export default function AddNewRecipe({ route, navigation }) {
     const [items, setItems] = useState([])
     //const [modifiedIngredient, setModifiedIngredient] = useState('')
 
-    /*useEffect(() => {
-        firebase.database().ref('items/').on('value', snapshot => {
-            const data = snapshot.val()
-            console.log(data)
-            //const prods = Object.values(data);
-            //console.log(prods)
-            //setItems(prods)
-        })
-    }, [])*/
-
     const saveItem = () => {
         firebase.database().ref('items/').push(
             {
@@ -51,18 +26,9 @@ export default function AddNewRecipe({ route, navigation }) {
                 'image': recipe.image
             }
         )
-        //updateList()
         setRecipe(emptyRecipe)
         setUrl('')
         Alert.alert('Recipe saved')
-    }
-
-    const updateList = () => {
-        firebase.database().ref('items/').on('value', snapshot => {
-            const data = snapshot.val()
-            const prods = Object.values(data);
-            setItems(prods)
-        })
     }
 
     const fetchRecipeInfo = () => {
@@ -212,5 +178,4 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around'
     }
-
 });
