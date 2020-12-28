@@ -1,5 +1,5 @@
 import React, { useState, useEffect }from 'react';
-import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditMenus({ route, navigation }) {
@@ -18,23 +18,56 @@ export default function EditMenus({ route, navigation }) {
         })
     }, [])
 
-    const editItem = () => {
-        console.log('Hello')
-    }
+    const DATA = [
+        {
+            title: 'Week 1',
+            data: items.filter(i => i.weeknumber == 1).map(i => i.weekday + ': ' + i.name)
+        },
+        {
+            title: 'Week 2',
+            data: items.filter(i => i.weeknumber == 2).map(i => i.weekday + ': ' + i.name)
+        },
+        {
+            title: 'Week 3',
+            data: items.filter(i => i.weeknumber == 3).map(i => i.weekday + ': ' + i.name)
+        },
+        {
+            title: 'Week 4',
+            data: items.filter(i => i.weeknumber == 4).map(i => i.weekday + ': ' + i.name)
+        },
+        {
+            title: 'Week 5',
+            data: items.filter(i => i.weeknumber == 5).map(i => i.weekday + ': ' + i.name)
+        },
+        {
+            title: 'Week 6',
+            data: items.filter(i => i.weeknumber == 6).map(i => i.weekday + ': ' + i.name)
+        },
+    ]
+
+    const Item = ({ item }) => (
+        <View style={styles.listItem}>
+            {console.log('item', item)}
+            <Text style={styles.listItem}>{item}</Text>
+            <Text style={styles.listItemText} onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}>Edit recipe</Text>
+        </View>
+    )
 
     return (
         <View style={styles.container}>
+            {/*console.log('data', DATA)}
+            {console.log('week1', week1)*/}
+            
             <Text>Menus</Text>
-            <FlatList 
-                keyExtractor={(item, index) => String(index)}
-                data={items}
-                renderItem={({ item, index }) =>
-                    <View style={styles.listItem}>
-                        <Text style={styles.listItemText}>{item.name}</Text>
-                        <Text style={styles.listItemText} onPress={() => navigation.navigate('Edit Recipe', { item: item })}>Edit recipe</Text>
-                    </View>
-                }
-            />
+
+            <SectionList
+                sections={DATA}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => <Item item={item} />}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text>{title}</Text>
+                )}
+                />
         </View>
     )
 }

@@ -1,95 +1,67 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, SafeAreaView, SectionList } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditRecipe({ route, navigation }) {
     const { item } = route.params
     const [recipe, setRecipe] = useState(item)
 
-    const editItem = (index, item) => {
-        //console.log(index)
-        let ingredientsArray = [...recipe.ingredients]
-        console.log(ingredientsArray)
-        //console.log(...modifiedRecipe)
-        //console.log(ingredientsArray[index])
-        ingredientsArray[index] = item
-        console.log({ ...recipe, ingredients: ingredientsArray })
-        setRecipe({ ...recipe, ingredients: ingredientsArray })
-    }
-    
-    const editInstructions = (index, item) => {
-        let instructionsArray = [...recipe.instructions]
-        console.log(instructionsArray)
-        instructionsArray[index] = item
-        console.log({ ...recipe, instructions: instructionsArray })
-        setRecipe({ ...recipe, instructions: instructionsArray })
-    }
-    
-    const saveItem = () => {
-        firebase.database().ref('items/').child(recipe.key).update(
-            {
-                'name': recipe.name,
-                'ingredients': recipe.ingredients,
-                'instructions': recipe.instructions,
-                'image': recipe.image,
-            }
-        )
-        Alert.alert('Changes saved to database')
-        navigation.navigate('Menus')
-    }
+    useEffect(() => {
+        firebase.database().ref('items/').on('value', snapshot => {
+            const data = snapshot.val()
+            //console.log(data)
+            const prods = Object.keys(data).map(key => ({ key, ...data[key] })).filter(i => i.key === item.key)
+            //console.log('prod', prods[0])
+            //console.log('item', item)
+            setRecipe(prods[0])
+        })
+    }, [])
 
-    const cancel = () => {
-        setRecipe(item)
-        navigation.navigate('Menus')
-    }
+    const DATA = [
+        {
+            title: 'Ingredients',
+            data: recipe.ingredients
+        },
+        {
+            title: 'Instructions',
+            data: recipe.instructions
+        },
+        {
+            title: 'Menu Info',
+            data: ['Weekday: ' + recipe.weekday, 'Weeknumber:' + recipe.weeknumber] || null
+        },
+    ]
+
+    const Item = ({ item }) => (
+        <View>
+            <Text>{item}</Text>
+        </View>
+    )
+
 
     return (
-        <View style={styles.container}>
-            <ScrollView style={styles.scrollView}>
-                {console.log('recipe', recipe.name)}
-                {console.log('key', recipe.key)}
-               
-                <Text>{recipe.name}</Text>
-                <Text>Ingredients:</Text>
-                <FlatList
-                    data={recipe.ingredients}
-                    renderItem={({ item, index }) =>
-                        <View style={styles.listItem}>
-                            <TextInput
-                                style={styles.listInput}
-                                onChangeText={modifiedIngredient => editItem(index, modifiedIngredient)}
-                                defaultValue={item}
-                            />
-                        </View>
-                    }
-                />
-                <Text>Instructions:</Text>
-                <FlatList
-                    data={recipe.instructions}
-                    renderItem={({ item, index }) =>
-                        <View style={styles.listItem}>
-                            <TextInput
-                                style={styles.listInput}
-                                multiline={true}
-                                onChangeText={modifiedInstructions => editInstructions(index, modifiedInstructions)}
-                                defaultValue={item}
-                            />
-                        </View>
-                    }
-                />
-
-                <View style={styles.buttonContainer}>
-                <Button 
-                    title='SAVE CHANGES'
-                    onPress={saveItem}
+        <SafeAreaView style={styles.container}>
+            {console.log(DATA)}
+            <Text>Recipe of {recipe.name}</Text>
+            <SectionList
+                sections={DATA}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => <Item item={item} />}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text>{title}</Text>
+                )}
+            />
+            <View style={styles.buttonContainer}>
+                <Button
+                    title='EDIT RECIPE'
+                    onPress={() => navigation.navigate('Edit Ingredients', { item: recipe })}
                 />
                 <Button
-                    title='CANCEL'
-                    onPress={cancel}
+                    title='GO BACK'
+                    onPress={() => navigation.navigate('Menus')}
                 />
-                </View>
-            </ScrollView>
-        </View>
+            </View>
+        </SafeAreaView>
     )
 }
 
