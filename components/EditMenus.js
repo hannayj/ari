@@ -1,5 +1,5 @@
-import React, { useState, useEffect }from 'react';
-import { StyleSheet, Text, View, Button, SectionList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SectionList, Pressable } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditMenus({ route, navigation }) {
@@ -12,7 +12,7 @@ export default function EditMenus({ route, navigation }) {
             //const newData = Object.keys(data).map( key => ({ key, ...data[key]}))
             //console.log(newData)
             //const prods = Object.values(data);
-            const prods = Object.keys(data).map( key => ({ key, ...data[key]}))
+            const prods = Object.keys(data).map(key => ({ key, ...data[key] }))
             console.log(prods)
             setItems(prods)
         })
@@ -46,28 +46,44 @@ export default function EditMenus({ route, navigation }) {
     ]
 
     const Item = ({ item }) => (
-        <View style={styles.listItem}>
-            {console.log('item', item)}
-            <Text style={styles.listItem}>{item}</Text>
-            <Text style={styles.listItemText} onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}>Edit recipe</Text>
-        </View>
+        <Pressable onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}>
+            <View style={styles.listItem}>
+                {console.log('item', item)}
+                <Text style={styles.listItem}>{item}</Text>
+            </View>
+        </Pressable>
     )
 
+    const listSeparator = () => {
+        return (
+            <View
+                style={{
+                    height: 1,
+                    width: '95%',
+                    backgroundColor: '#CED0CE'
+                }}
+            />
+        )
+    }
+
     return (
+
         <View style={styles.container}>
             {/*console.log('data', DATA)}
-            {console.log('week1', week1)*/}
-            
+        {console.log('week1', week1)*/}
+
             <Text>Menus</Text>
 
             <SectionList
                 sections={DATA}
                 keyExtractor={(item, index) => item + index}
+                ItemSeparatorComponent={listSeparator}
                 renderItem={({ item }) => <Item item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
                     <Text>{title}</Text>
                 )}
-                />
+
+            />
         </View>
     )
 }
@@ -85,7 +101,8 @@ const styles = StyleSheet.create({
     listItem: {
         fontSize: 18,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        margin: 5,
     },
     listItemText: {
         fontSize: 18,
