@@ -1,35 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard, Image, FlatList, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard } from 'react-native';
 import firebase from '../util/firebase'
+import Constants from 'expo-constants';
 
 export default function AddNewRecipe({ route, navigation }) {
-
-    const emptyRecipe = {
-        name: '',
-        ingredients: [],
-        instructions: [],
-        image: 'www'
-    }
-
     const [url, setUrl] = useState('')
-    const [recipe, setRecipe] = useState(emptyRecipe)
-    //const [modifiedRecipe, setModifiedRecipe] = useState(recipe)
-    const [items, setItems] = useState([])
-    //const [modifiedIngredient, setModifiedIngredient] = useState('')
-
-    const saveItem = () => {
-        firebase.database().ref('items/').push(
-            {
-                'name': recipe.name,
-                'ingredients': recipe.ingredients,
-                'instructions': recipe.instructions,
-                'image': recipe.image
-            }
-        )
-        setRecipe(emptyRecipe)
-        setUrl('')
-        Alert.alert('Recipe saved')
-    }
 
     const fetchRecipeInfo = () => {
         fetch('https://mycookbook-io1.p.rapidapi.com/recipes/rapidapi', {
@@ -43,19 +18,21 @@ export default function AddNewRecipe({ route, navigation }) {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('start', data[0].name)
+                /*console.log('start', data[0].name)
                 console.log(data[0].ingredients)
                 console.log(data[0].instructions[0].steps)
-                console.log(data[0].images[0])
+                console.log(data[0].images[0])*/
 
-                setRecipe({
+                const recipe = {
                     name: data[0].name,
                     ingredients: data[0].ingredients,
                     instructions: data[0].instructions[0].steps,
-                    image: data[0].images[0]
-                })
+                    image: data[0].images[0],
+                    weekday: null,
+                    weeknumber: null
+                }
                 Keyboard.dismiss()
-                //setUrl('')
+                saveItem(recipe)
             })
 
             .catch(error => {
@@ -63,80 +40,49 @@ export default function AddNewRecipe({ route, navigation }) {
             });
     }
 
-    const editItem = (index, item) => {
-        //console.log(index)
-        let ingredientsArray = [...recipe.ingredients]
-        console.log(ingredientsArray)
-        //console.log(...modifiedRecipe)
-        //console.log(ingredientsArray[index])
-        ingredientsArray[index] = item
-        console.log({ ...recipe, ingredients: ingredientsArray })
-        setRecipe({ ...recipe, ingredients: ingredientsArray })
-    }
-
-    const editInstructions = () => {
-    }
-
-
-    if (recipe.name == '') {
-        return (
-            <View style={styles.container}>
-                <Text>Fetch new recipe by giving the URL of the recipe</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={url => setUrl(url)}
-                    value={url}
-                />
-                <Button
-                    title='FETCH'
-                    onPress={fetchRecipeInfo}
-                />
-            </View>
+    const saveItem = (recipe) => {
+        //console.log(recipe)
+        firebase.database().ref('items/').push(
+            {
+                'name': recipe.name,
+                'ingredients': recipe.ingredients,
+                'instructions': recipe.instructions,
+                'image': recipe.image,
+                'weekday': null,
+                'weeknumber': null
+            }
         )
-    } else {
-        return (
-            <SafeAreaView style={styles.container}>
-                <ScrollView style={styles.scrollView}>
-                    <Text>{recipe.name}</Text>
-                    <Text>Ingredients:</Text>
-                    <FlatList
-                        keyExtractor={(item, index) => String(index)}
-                        data={recipe.ingredients}
-                        renderItem={({ item, index }) =>
-                            <View style={styles.listItem}>
-                                <TextInput
-                                    style={styles.listInput}
-                                    onChangeText={modifiedIngredient => editItem(index, modifiedIngredient)}
-                                    defaultValue={item}
-                                />
-                            </View>
-                        }
-                    />
-                    <Text>Instructions:</Text>
-                    <FlatList
-                        keyExtractor={(item, index) => String(index)}
-                        data={recipe.instructions}
-                        renderItem={({ item, index }) =>
-                            <View>
-                                <Text style={styles.listItemText}>{index + 1}. {item}</Text>
-                            </View>
-                        }
-                    />
-                    <Image source={{ uri: recipe.image }} style={{ width: 200, aspectRatio: 1 }} />
-                    <View style={styles.buttonContainer}>
-                        <Button
-                            title='Edit instuctions'
-                            onPress={editInstructions}
-                        />
-                        <Button
-                            title='Save recipe'
-                            onPress={saveItem}
-                        />
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+        getKey()
+    }
+
+    const getKey = () => {
+        firebase.database().ref('items/').on('value', snapshot => {
+            const data = snapshot.val()
+            //console.log(data)
+            const prods = Object.keys(data).map(key => ({ key, ...data[key] }))
+            //console.log('prod', prods[prods.length - 1])
+
+            Alert.alert('Recipe saved')
+            navigation.navigate('Edit Recipe', { item: prods[prods.length - 1] })
+        }
         )
     }
+
+    return (
+        <View style={styles.container}>
+            <Text>Add new recipe by giving the URL of the recipe</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={url => setUrl(url)}
+                value={url}
+            />
+            <Button
+                color='#704270'
+                title='ADD'
+                onPress={fetchRecipeInfo}
+            />
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -146,12 +92,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    scrollView: {
-        width: '95%',
-    },
-    containerButtons: {
-        margin: 5,
-    },
     input: {
         width: '95%',
         height: 30,
@@ -159,23 +99,4 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
     },
-    listInput: {
-        width: '95%',
-        height: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-    },
-    listItem: {
-        fontSize: 18,
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    },
-    listItemText: {
-        fontSize: 18,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    }
 });
