@@ -7,7 +7,7 @@ import AddNewRecipe from './components/AddNewRecipe'
 import EditMenus from './components/EditMenus'
 import CreateShoppingList from './components/CreateShoppingList'
 import EditRecipe from './components/EditRecipe'
-import EditIngredients from './components/EditIngredienst'
+import EditIngredients from './components/EditIngredients'
 import EditInstructions from './components/EditInstructions'
 import EditMenuInfo from './components/EditMenuInfo'
 
