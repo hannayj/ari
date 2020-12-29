@@ -54,33 +54,35 @@ export default function EditIngredients({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-                
+            <Text style={styles.h2}>Name:</Text>
                 <TextInput
                     style={styles.listInput}
                     onChangeText={name => setName(name)}
-                    defaultValue={recipe.name}  
+                    defaultValue={recipe.name}
                 />
-                <Text>Ingredients:</Text>
-                <FlatList
-                    data={recipe.ingredients}
-                    keyExtractor={(item, index) => String(index)}
-                    renderItem={({ item, index }) =>
-                        <View style={styles.listItem}>
-                            <TextInput
-                                style={styles.listInput}
-                                onChangeText={modifiedIngredient => editIngredients(index, modifiedIngredient)}
-                                defaultValue={item}
-                            />
-                        </View>
-                    }
-                />
+            <Text style={styles.h2}>Ingredients:</Text>
+            <FlatList
+                data={recipe.ingredients}
+                keyExtractor={(item, index) => String(index)}
+                renderItem={({ item, index }) =>
+                    <View style={styles.listItem}>
+                        <TextInput
+                            style={styles.listInput}
+                            onChangeText={modifiedIngredient => editIngredients(index, modifiedIngredient)}
+                            defaultValue={item}
+                        />
+                    </View>
+                }
+            />
 
             <View style={styles.buttonContainer}>
                 <Button
+                    color='#704270'
                     title='SAVE CHANGES'
                     onPress={saveItem}
                 />
                 <Button
+                    color='#704270'
                     title='CANCEL'
                     onPress={cancel}
                 />
@@ -97,19 +99,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    scrollView: {
-        width: '95%',
-    },
-    containerButtons: {
-        margin: 5,
-    },
-    input: {
-        width: '95%',
-        height: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-    },
     listInput: {
         width: '95%',
         minHeight: 30,
@@ -119,15 +108,19 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     listItem: {
-        fontSize: 18,
         flexDirection: 'row',
-        justifyContent: 'space-around'
-    },
-    listItemText: {
-        fontSize: 18,
+        justifyContent: 'space-around',
+        width: '100%',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+    h2: {
+        fontSize: 20,
+        color: '#704270',
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginLeft: 5
     }
 });

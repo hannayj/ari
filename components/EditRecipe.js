@@ -10,7 +10,7 @@ export default function EditRecipe({ route, navigation }) {
         firebase.database().ref('items/').on('value', snapshot => {
             const data = snapshot.val()
             //console.log(data)
-            const prods = Object.keys(data).map(key => ({ key, ...data[key] })).filter(i => i.key === item.key)
+            const prods = Object.keys(data).map( key => ({ key, ...data[key]})).filter(i => i.key === item.key)
             //console.log('prod', prods[0])
             //console.log('item', item)
             setRecipe(prods[0])
@@ -28,40 +28,43 @@ export default function EditRecipe({ route, navigation }) {
         },
         {
             title: 'Menu Info',
-            data: ['Weekday: ' + recipe.weekday, 'Weeknumber:' + recipe.weeknumber] || null
+            data: ['Weekday: ' + recipe.weekday, 'Weeknumber: ' + recipe.weeknumber] || null
         },
     ]
 
     const Item = ({ item }) => (
         <View>
-            <Text>{item}</Text>
+            <Text style={styles.listItemText}>{item}</Text>
         </View>
     )
-
-
+       
     return (
-        <SafeAreaView style={styles.container}>
-            {console.log(DATA)}
-            <Text>Recipe of {recipe.name}</Text>
+        <View style={styles.container}>
+            {/*console.log(DATA)*/}
+           
+            <Text style={styles.h1}>{recipe.name}</Text>
+            
             <SectionList
                 sections={DATA}
                 keyExtractor={(item, index) => item + index}
                 renderItem={({ item }) => <Item item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
-                    <Text>{title}</Text>
+                    <Text style={styles.h2}>{title}</Text>
                 )}
             />
             <View style={styles.buttonContainer}>
                 <Button
+                    color='#704270'
                     title='EDIT RECIPE'
                     onPress={() => navigation.navigate('Edit Ingredients', { item: recipe })}
                 />
                 <Button
+                    color='#704270'
                     title='GO BACK'
                     onPress={() => navigation.navigate('Menus')}
                 />
             </View>
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -71,38 +74,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    scrollView: {
-        width: '95%',
-    },
-    containerButtons: {
-        margin: 5,
-    },
-    input: {
-        width: '95%',
-        height: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-    },
-    listInput: {
-        width: '95%',
-        minHeight: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-        padding: 5,
-    },
-    listItem: {
-        fontSize: 18,
-        flexDirection: 'row',
-        justifyContent: 'space-around'
+        //marginLeft: 5
     },
     listItemText: {
         fontSize: 18,
+        marginBottom: 3,
+        marginLeft: 5
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+    h1: {
+        fontSize: 24,
+        backgroundColor: '#704270',
+        color: 'white',
+        width: '100%',
+        padding: 10,
+        marginTop: 10
+    },
+    h2: {
+        fontSize: 20,
+        color: '#704270',
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginLeft: 5
     }
 });

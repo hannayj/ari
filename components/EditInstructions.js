@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert } from 'react-native';
 import firebase from '../util/firebase'
 
-export default function EditRecipe({ route, navigation }) {
+export default function EditInstructions({ route, navigation }) {
     const { item } = route.params
     const [recipe, setRecipe] = useState(item)
     const [weekday, setWeekday] = useState(item.weekday || null)
@@ -51,7 +51,7 @@ export default function EditRecipe({ route, navigation }) {
 
         <View style={styles.container}>
 
-            <Text>Instructions:</Text>
+            <Text style={styles.h2}>Instructions:</Text>
             <FlatList
                 data={recipe.instructions}
                 keyExtractor={(item, index) => String(index)}
@@ -69,10 +69,12 @@ export default function EditRecipe({ route, navigation }) {
 
             <View style={styles.buttonContainer}>
                 <Button
+                    color='#704270'
                     title='SAVE CHANGES'
                     onPress={saveItem}
                 />
                 <Button
+                    color='#704270'
                     title='CANCEL'
                     onPress={cancel}
                 />
@@ -89,19 +91,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    scrollView: {
-        width: '95%',
-    },
-    containerButtons: {
-        margin: 5,
-    },
-    input: {
-        width: '95%',
-        height: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-    },
     listInput: {
         width: '95%',
         minHeight: 30,
@@ -115,11 +104,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
-    listItemText: {
-        fontSize: 18,
-    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+    h2: {
+        fontSize: 20,
+        color: '#704270',
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginLeft: 5
     }
 });

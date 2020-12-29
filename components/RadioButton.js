@@ -12,8 +12,8 @@ export default function RadioButton(props) {
 
     return (
         <View>
-            <Text> Selected: {value} </Text>
-            {/*console.log('props', props)}
+            {/*<Text> Selected: {value} </Text>
+            console.log('props', props)}
             {console.log('weekday', props.weekday)*/}
             {props.items.map(item => {
                 return (
@@ -45,18 +45,18 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     radioCircle: {
-        height: 20,
-        width: 20,
-        borderRadius: 50,
+        height: 26,
+        width: 26,
+        borderRadius: 60,
         borderWidth: 2,
-        borderColor: '#000',
+        borderColor: '#704270',
         alignItems: 'center',
         justifyContent: 'center',
     },
     selectedRb: {
-        width: 10,
-        height: 10,
-        borderRadius: 25,
-        backgroundColor: '#000',
+        width: 13,
+        height: 13,
+        borderRadius: 30,
+        backgroundColor: '#704270',
     },
 });

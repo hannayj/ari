@@ -105,15 +105,13 @@ export default function EditMenus({ route, navigation }) {
             {/*console.log('data', DATA)}
         {console.log('week1', week1)*/}
 
-            <Text>Menus</Text>
-
             <SectionList
                 sections={DATA}
                 keyExtractor={(item, index) => item + index}
                 ItemSeparatorComponent={listSeparator}
                 renderItem={({ item }) => <Item item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
-                    <Text>{title}</Text>
+                    <Text style={styles.h1}>{title}</Text>
                 )}
 
             />
@@ -128,16 +126,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    containerButtons: {
-        margin: 5,
-    },
     listItem: {
         fontSize: 18,
         flexDirection: 'row',
         justifyContent: 'space-between',
         margin: 5,
     },
-    listItemText: {
-        fontSize: 18,
-    },
+    h1: {
+        fontSize: 20,
+        backgroundColor: '#704270',
+        color: 'white',
+        width: '100%',
+        padding: 10,
+        marginTop: 10
+    } 
 });

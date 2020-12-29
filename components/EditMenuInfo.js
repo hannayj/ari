@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, ScrollView } from 'react-native';
 import firebase from '../util/firebase'
 import RadioButton from './RadioButton'
 
@@ -73,18 +73,21 @@ export default function EditMenuInfo({ route, navigation }) {
     return (
 
         <View style={styles.container}>
-
-            <Text>Choose weekday</Text>
+            <ScrollView>
+            <Text style={styles.h2}>Choose weekday</Text>
             <RadioButton items={days} weekday={weekday} change={change} />
-            <Text>Choose weeknumber</Text>
+            <Text style={styles.h2}>Choose weeknumber</Text>
             <RadioButton items={weeks} weeknumber={weeknumber} change={change} />
+            </ScrollView>
 
             <View style={styles.buttonContainer}>
                 <Button
+                    color='#704270'
                     title='SAVE CHANGES'
                     onPress={saveItem}
                 />
                 <Button
+                    color='#704270'
                     title='CANCEL'
                     onPress={cancel}
                 />
@@ -101,37 +104,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    scrollView: {
-        width: '95%',
-    },
-    containerButtons: {
-        margin: 5,
-    },
-    input: {
-        width: '95%',
-        height: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-    },
-    listInput: {
-        width: '95%',
-        minHeight: 30,
-        fontSize: 16,
-        borderColor: 'gray',
-        borderWidth: 1,
-        padding: 5,
-    },
-    listItem: {
-        fontSize: 18,
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    },
-    listItemText: {
-        fontSize: 18,
-    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+    h2: {
+        fontSize: 20,
+        color: '#704270',
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginLeft: 5
     }
 });
