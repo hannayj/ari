@@ -61,12 +61,13 @@ export default function EditMenuInfo({ route, navigation }) {
                 }
             )
         }
-        Alert.alert('Changes saved to database')
+        Alert.alert('Changes saved')
         navigation.navigate('Edit Recipe', { item: recipe })
     }
 
     const cancel = () => {
         setRecipe(recipe)
+        Alert.alert('Changes saved')
         navigation.navigate('Edit Recipe', { item: recipe })
     }
 
@@ -88,7 +89,7 @@ export default function EditMenuInfo({ route, navigation }) {
                 />
                 <Button
                     color='#704270'
-                    title='CANCEL'
+                    title='BACK TO RECIPE'
                     onPress={cancel}
                 />
             </View>

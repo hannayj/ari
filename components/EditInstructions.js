@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditInstructions({ route, navigation }) {
@@ -38,7 +38,7 @@ export default function EditInstructions({ route, navigation }) {
                 }
             )
         }
-        Alert.alert('Changes saved to database')
+        //Alert.alert('Changes saved to database')
         navigation.navigate('Edit Menu Info', { item: recipe })
     }
 
@@ -48,39 +48,45 @@ export default function EditInstructions({ route, navigation }) {
     }
 
     return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
 
-        <View style={styles.container}>
+                    <Text style={styles.h2}>Instructions:</Text>
+                    <FlatList
+                        data={recipe.instructions}
+                        keyExtractor={(item, index) => String(index)}
+                        renderItem={({ item, index }) =>
+                            <View style={styles.listItem}>
+                                <TextInput
+                                    style={styles.listInput}
+                                    multiline={true}
+                                    onChangeText={modifiedInstructions => editInstructions(index, modifiedInstructions)}
+                                    defaultValue={item}
+                                />
+                            </View>
+                        }
+                    />
 
-            <Text style={styles.h2}>Instructions:</Text>
-            <FlatList
-                data={recipe.instructions}
-                keyExtractor={(item, index) => String(index)}
-                renderItem={({ item, index }) =>
-                    <View style={styles.listItem}>
-                        <TextInput
-                            style={styles.listInput}
-                            multiline={true}
-                            onChangeText={modifiedInstructions => editInstructions(index, modifiedInstructions)}
-                            defaultValue={item}
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            color='#704270'
+                            title='SAVE CHANGES'
+                            onPress={saveItem}
+                        />
+                        <Button
+                            color='#704270'
+                            title='BACK TO RECIPE'
+                            onPress={cancel}
                         />
                     </View>
-                }
-            />
 
-            <View style={styles.buttonContainer}>
-                <Button
-                    color='#704270'
-                    title='SAVE CHANGES'
-                    onPress={saveItem}
-                />
-                <Button
-                    color='#704270'
-                    title='CANCEL'
-                    onPress={cancel}
-                />
-            </View>
-
-        </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }
 

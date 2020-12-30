@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, TextInput, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditIngredients({ route, navigation }) {
@@ -43,7 +43,7 @@ export default function EditIngredients({ route, navigation }) {
                 }
             )
         }
-        Alert.alert('Changes saved to database')
+        //Alert.alert('Changes saved to database')
         navigation.navigate('Edit Instructions', { item: recipe })
     }
 
@@ -53,42 +53,48 @@ export default function EditIngredients({ route, navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.h2}>Name:</Text>
-                <TextInput
-                    style={styles.listInput}
-                    onChangeText={name => setName(name)}
-                    defaultValue={recipe.name}
-                />
-            <Text style={styles.h2}>Ingredients:</Text>
-            <FlatList
-                data={recipe.ingredients}
-                keyExtractor={(item, index) => String(index)}
-                renderItem={({ item, index }) =>
-                    <View style={styles.listItem}>
-                        <TextInput
-                            style={styles.listInput}
-                            onChangeText={modifiedIngredient => editIngredients(index, modifiedIngredient)}
-                            defaultValue={item}
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    <Text style={styles.h2}>Name:</Text>
+                    <TextInput
+                        style={styles.listInput}
+                        onChangeText={name => setName(name)}
+                        defaultValue={recipe.name}
+                    />
+                    <Text style={styles.h2}>Ingredients:</Text>
+                    <FlatList
+                        data={recipe.ingredients}
+                        keyExtractor={(item, index) => String(index)}
+                        renderItem={({ item, index }) =>
+                            <View style={styles.listItem}>
+                                <TextInput
+                                    style={styles.listInput}
+                                    onChangeText={modifiedIngredient => editIngredients(index, modifiedIngredient)}
+                                    defaultValue={item}
+                                />
+                            </View>
+                        }
+                    />
+
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            color='#704270'
+                            title='SAVE CHANGES'
+                            onPress={saveItem}
+                        />
+                        <Button
+                            color='#704270'
+                            title='BACK TO RECIPE'
+                            onPress={cancel}
                         />
                     </View>
-                }
-            />
-
-            <View style={styles.buttonContainer}>
-                <Button
-                    color='#704270'
-                    title='SAVE CHANGES'
-                    onPress={saveItem}
-                />
-                <Button
-                    color='#704270'
-                    title='CANCEL'
-                    onPress={cancel}
-                />
-            </View>
-
-        </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }
 
