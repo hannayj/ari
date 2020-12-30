@@ -63,7 +63,7 @@ export default function AddNewRecipe({ route, navigation }) {
             //console.log('prod', prods[prods.length - 1])
 
             Alert.alert('Recipe saved')
-            navigation.navigate('Edit Recipe', { item: prods[prods.length - 1] })
+            navigation.navigate('Recipe', { item: prods[prods.length - 1] })
         }
         )
     }

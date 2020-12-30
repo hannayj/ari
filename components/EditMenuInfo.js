@@ -62,13 +62,13 @@ export default function EditMenuInfo({ route, navigation }) {
             )
         }
         Alert.alert('Changes saved')
-        navigation.navigate('Edit Recipe', { item: recipe })
+        navigation.navigate('Recipe', { item: recipe })
     }
 
     const cancel = () => {
         setRecipe(recipe)
         Alert.alert('Changes saved')
-        navigation.navigate('Edit Recipe', { item: recipe })
+        navigation.navigate('Recipe', { item: recipe })
     }
 
     return (

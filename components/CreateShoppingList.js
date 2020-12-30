@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button, Flatlist } from 'react-native';
 export default function CreateShoppingList({ route }) {
     return (
         <View style={styles.container}>
-            <Text>ShoppingList</Text>
+            <Text>Coming soon...</Text>
             
         </View>
     )

@@ -117,7 +117,7 @@ export default function EditMenus({ route, navigation }) {
 
     const Item = ({ item }) => (
         <Pressable 
-            onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}
+            onPress={() => navigation.navigate('Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}
             onLongPress={() => deleteRecipe(items.find(i => i.weekday + ': ' + i.name == item))}
         >
             <View style={styles.listItem}>

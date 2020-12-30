@@ -44,7 +44,7 @@ export default function EditInstructions({ route, navigation }) {
 
     const cancel = () => {
         setRecipe(recipe)
-        navigation.navigate('Edit Recipe', { item: recipe })
+        navigation.navigate('Recipe', { item: recipe })
     }
 
     return (
