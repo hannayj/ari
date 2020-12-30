@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SectionList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SectionList, Pressable, Alert } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditMenus({ route, navigation }) {
@@ -10,9 +10,14 @@ export default function EditMenus({ route, navigation }) {
     const [week4, setWeek4] = useState([])
     const [week5, setWeek5] = useState([])
     const [week6, setWeek6] = useState([])
+    const [weekless, setWeekless] = useState([])
     const days = {'Monday': 0, 'Tuesday': 1,'Wednesday' : 2, 'Thursday': 3, 'Friday': 4, 'Saturday' : 5, 'Sunday': 6}
 
     useEffect(() => {
+        listRecipesFromDb()
+    }, [])
+
+    const listRecipesFromDb = () => {
         firebase.database().ref('items/').on('value', snapshot => {
             const data = snapshot.val()
             //console.log(data)
@@ -26,8 +31,9 @@ export default function EditMenus({ route, navigation }) {
             setWeek4(filterAndSortWeeks(prods.filter(i => i.weeknumber == 4).map(i => i.weekday + ': ' + i.name)))
             setWeek5(filterAndSortWeeks(prods.filter(i => i.weeknumber == 5).map(i => i.weekday + ': ' + i.name)))
             setWeek6(filterAndSortWeeks(prods.filter(i => i.weeknumber == 6).map(i => i.weekday + ': ' + i.name)))
+            setWeekless(prods.filter(i => i.weeknumber == null).map(i => i.weekday + ': ' + i.name))
         })
-    }, [])
+    }
 
     const filterAndSortWeeks = (list) => {
         // temporary array holds objects with position and sort-value
@@ -49,6 +55,33 @@ export default function EditMenus({ route, navigation }) {
         });
 
         return result
+    }
+
+    const deleteRecipe = (item) => {
+        console.log('item', item)
+        console.log('item.key', item.key)
+        
+        Alert.alert(
+            'Deleting a recipe',
+            `Are you sure you want to delete ${item.name}?`,
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel'
+              },
+              { 
+                text: 'OK', 
+                onPress: () => {
+                    console.log('OK Pressed');
+                    firebase.database().ref('items/').child(item.key).remove() 
+                    listRecipesFromDb(); 
+                    Alert.alert(`${item.name} deleted`) 
+                    } 
+                }
+            ],
+            { cancelable: false }
+          );
     }
 
     const DATA = [
@@ -76,10 +109,17 @@ export default function EditMenus({ route, navigation }) {
             title: 'Week 6',
             data: week6
         },
+        {
+            title: 'Other recipes',
+            data: weekless
+        }
     ]
 
     const Item = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}>
+        <Pressable 
+            onPress={() => navigation.navigate('Edit Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}
+            onLongPress={() => deleteRecipe(items.find(i => i.weekday + ': ' + i.name == item))}
+        >
             <View style={styles.listItem}>
                 {/*console.log('item', item)*/}
                 <Text style={styles.listItem}>{item}</Text>

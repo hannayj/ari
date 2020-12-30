@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, SafeAreaView, SectionList } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditRecipe({ route, navigation }) {
@@ -10,7 +10,7 @@ export default function EditRecipe({ route, navigation }) {
         firebase.database().ref('items/').on('value', snapshot => {
             const data = snapshot.val()
             //console.log(data)
-            const prods = Object.keys(data).map( key => ({ key, ...data[key]})).filter(i => i.key === item.key)
+            const prods = Object.keys(data).map(key => ({ key, ...data[key] })).filter(i => i.key === item.key)
             //console.log('prod', prods[0])
             //console.log('item', item)
             setRecipe(prods[0])
@@ -20,15 +20,17 @@ export default function EditRecipe({ route, navigation }) {
     const DATA = [
         {
             title: 'Ingredients',
-            data: recipe.ingredients
+            //data: recipe.ingredients
+            data: recipe.ingredients !== undefined ? recipe.ingredients : []
         },
         {
             title: 'Instructions',
-            data: recipe.instructions
+            //data: recipe.instructions
+            data: recipe.instructions !== undefined ? recipe.instructions : []
         },
         {
             title: 'Menu Info',
-            data: ['Weekday: ' + recipe.weekday, 'Weeknumber: ' + recipe.weeknumber] || null
+            data: ['Weekday: ' + (recipe.weekday !== undefined ? recipe.weekday : ''), 'Weeknumber: ' + (recipe.weeknumber !== undefined ? recipe.weeknumber : '')]
         },
     ]
 
@@ -37,13 +39,13 @@ export default function EditRecipe({ route, navigation }) {
             <Text style={styles.listItemText}>{item}</Text>
         </View>
     )
-       
+
     return (
         <View style={styles.container}>
             {/*console.log(DATA)*/}
-           
+
             <Text style={styles.h1}>{recipe.name}</Text>
-            
+
             <SectionList
                 sections={DATA}
                 keyExtractor={(item, index) => item + index}
@@ -57,11 +59,6 @@ export default function EditRecipe({ route, navigation }) {
                     color='#704270'
                     title='EDIT RECIPE'
                     onPress={() => navigation.navigate('Edit Ingredients', { item: recipe })}
-                />
-                <Button
-                    color='#704270'
-                    title='GO BACK'
-                    onPress={() => navigation.navigate('Menus')}
                 />
             </View>
         </View>
