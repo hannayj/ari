@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, SectionList } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList, ImageBackground } from 'react-native';
 import firebase from '../util/firebase'
+import LoadingView from './LoadingView'
 
 export default function EditRecipe({ route, navigation }) {
     const { item } = route.params
     const [recipe, setRecipe] = useState(item)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         firebase.database().ref('items/').on('value', snapshot => {
@@ -44,16 +46,28 @@ export default function EditRecipe({ route, navigation }) {
         <View style={styles.container}>
             {/*console.log(DATA)*/}
 
-            <Text style={styles.h1}>{recipe.name}</Text>
 
             <SectionList
+                ListHeaderComponent={<Text style={styles.h1}>{recipe.name}</Text>}
+                ListFooterComponent={
+                    <ImageBackground
+                        style={styles.image}
+                        source={{ uri: item.image, }}
+                        onLoadStart={() => setLoading(true)}
+                        onLoadEnd={() => setLoading(false)}
+                    >
+                        {loading && <LoadingView />}
+                    </ImageBackground>
+                }
                 sections={DATA}
                 keyExtractor={(item, index) => item + index}
                 renderItem={({ item }) => <Item item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
                     <Text style={styles.h2}>{title}</Text>
                 )}
+                stickySectionHeadersEnabled={false}
             />
+
             <View style={styles.buttonContainer}>
                 <Button
                     color='#704270'
@@ -96,5 +110,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 10,
         marginLeft: 5
+    },
+    image: {
+        minHeight: 300,
+        marginTop: 10
     }
 });
