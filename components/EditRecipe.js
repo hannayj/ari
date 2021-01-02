@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, SectionList, ImageBackground, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList, ImageBackground, Platform, Alert } from 'react-native';
 import firebase from '../util/firebase'
 import LoadingView from './LoadingView'
 import * as ImagePicker from 'expo-image-picker';
@@ -9,12 +9,9 @@ export default function EditRecipe({ route, navigation }) {
     const { item } = route.params
     const [recipe, setRecipe] = useState(item)
     const [loading, setLoading] = useState(false)
+    const [imgUri, setImgUri] = useState(Array.isArray(recipe.image) ? recipe.image[0] : recipe.image)
 
     useEffect(() => {
-        getRecipe()
-    }, [])
-
-    const getRecipe = () => {
         firebase.database().ref('items/').on('value', snapshot => {
             const data = snapshot.val()
             //console.log(data)
@@ -23,8 +20,44 @@ export default function EditRecipe({ route, navigation }) {
             //console.log('item', item)
             setRecipe(prods[0])
         })
+    }, [])
+
+    /*change recipe's image. If image picked already from the media library, alert asks 
+    if you want to pick another or restore default image*/
+    const changeImage = () => {
+        if (Array.isArray(recipe.image)) {
+            Alert.alert(
+                'Change image',
+                'What would you like to do?',
+                [
+                    {
+                        text: 'Pick new image',
+                        onPress: () => {
+                            console.log('Pick new image pressed')
+                            pickImage()
+                        }
+                    },
+                    {
+                        text: 'Restore default image',
+                        onPress: () => {
+                            console.log('Restore default image pressed');
+                            setRecipe({ ...recipe, image: recipe.image[1] })
+                            firebase.database().ref('items/').child(recipe.key).update(
+                                {
+                                    'image': recipe.image[1],
+                                }
+                            )
+                            setImgUri(recipe.image[1])
+                        }
+                    }
+                ],
+            );
+        } else {
+            pickImage()
+        }
     }
 
+    //permission to use media library
     getPermissionAsync = async () => {
         if (Platform.OS !== 'web') {
             const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
@@ -34,7 +67,10 @@ export default function EditRecipe({ route, navigation }) {
         }
     }
 
+    //choose picture from the devices media library
     const pickImage = async () => {
+
+        Alert.alert
 
         getPermissionAsync()
 
@@ -48,26 +84,34 @@ export default function EditRecipe({ route, navigation }) {
         //console.log(result.uri);
 
         if (!result.cancelled) {
-            setRecipe({ ...recipe, image: result.uri })
+            let image = result.uri
+            let imageArray = []
+
+            /*if image has been picked already from the media library for this item
+            then the previous picture is overwritten*/
+            if (Array.isArray(recipe.image)) {
+                imageArray = [image, recipe.image[1]]
+                console.log('imageArray in array', imageArray)
+
+                /* if there is only the default picture, recipe.image is turned into an array and
+                the chosen picture form media library is placed first into array*/
+            } else {
+                imageArray = [image, recipe.image]
+                console.log('imageArray in single', imageArray)
+            }
+
+            // set recipe and update new picture uri to database
+            setRecipe({ ...recipe, image: imageArray })
             firebase.database().ref('items/').child(recipe.key).update(
                 {
-                    'image': result.uri,
+                    'image': imageArray,
                 }
             )
-            getRecipe()
+
+            // show new image
+            setImgUri(imageArray[0])
         }
     };
-
-    /*const wwwImage = () => {
-        let wwwImage = "https://cdn.valio.fi/mediafiles/5a9da7b8-7ffd-474d-96d6-72261286615b/1600x1200-recipe-data/4x3/perinteinen-jauhelihakastike.jpg"
-        setRecipe({ ...recipe, image: wwwImage })
-        firebase.database().ref('items/').child(recipe.key).update(
-            {
-                'image': wwwImage,
-            }
-        )
-        getRecipe()
-    }*/
 
     const DATA = [
         {
@@ -96,13 +140,12 @@ export default function EditRecipe({ route, navigation }) {
         <View style={styles.container}>
             {/*console.log(DATA)*/}
 
-
             <SectionList
                 ListHeaderComponent={<Text style={styles.h1}>{recipe.name}</Text>}
                 ListFooterComponent={
                     <ImageBackground
                         style={styles.image}
-                        source={{ uri: recipe.image }}
+                        source={{ uri: imgUri }}
                         onLoadStart={() => setLoading(true)}
                         onLoadEnd={() => setLoading(false)}
                     >
@@ -128,14 +171,9 @@ export default function EditRecipe({ route, navigation }) {
                 <Button
                     color='#704270'
                     title='CHANGE IMAGE'
-                    onPress={pickImage}
+                    onPress={changeImage}
                 />
 
-                {/*<Button
-                    color='#704270'
-                    title='WWW'
-                    onPress={wwwImage}
-                />*/}
             </View>
         </View>
     )
@@ -147,7 +185,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        //marginLeft: 5
     },
     listItemText: {
         fontSize: 18,
