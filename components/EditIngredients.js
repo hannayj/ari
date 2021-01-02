@@ -5,8 +5,6 @@ import firebase from '../util/firebase'
 export default function EditIngredients({ route, navigation }) {
     const { item } = route.params
     const [recipe, setRecipe] = useState(item)
-    const [weekday, setWeekday] = useState(item.weekday || null)
-    const [weeknumber, setWeeknumber] = useState(item.weeknumber || null)
     const [name, setName] = useState(item.name)
 
     const editIngredients = (index, item) => {
@@ -22,27 +20,12 @@ export default function EditIngredients({ route, navigation }) {
     }
 
     const saveItem = () => {
-        if (item.weekday == null || item.weeknumber == null) {
-            firebase.database().ref('items/').child(recipe.key).set({
-                'name': name,
-                'ingredients': recipe.ingredients,
-                'instructions': recipe.instructions,
-                'image': recipe.image,
-                'weekday': weekday,
-                'weeknumber': weeknumber
-            })
-        } else {
             firebase.database().ref('items/').child(recipe.key).update(
                 {
                     'name': name,
                     'ingredients': recipe.ingredients,
-                    'instructions': recipe.instructions,
-                    'image': recipe.image,
-                    'weekday': weekday,
-                    'weeknumber': weeknumber
                 }
             )
-        }
         //Alert.alert('Changes saved to database')
         navigation.navigate('Edit Instructions', { item: recipe })
     }
