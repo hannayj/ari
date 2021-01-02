@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, SectionList, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, View, SectionList, Pressable, Alert, Share, Button } from 'react-native';
 import firebase from '../util/firebase'
 
 export default function EditMenus({ route, navigation }) {
@@ -11,7 +11,7 @@ export default function EditMenus({ route, navigation }) {
     const [week5, setWeek5] = useState([])
     const [week6, setWeek6] = useState([])
     const [weekless, setWeekless] = useState([])
-    const days = {'Monday': 0, 'Tuesday': 1,'Wednesday' : 2, 'Thursday': 3, 'Friday': 4, 'Saturday' : 5, 'Sunday': 6}
+    const days = { 'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6 }
 
     useEffect(() => {
         listRecipesFromDb()
@@ -60,29 +60,55 @@ export default function EditMenus({ route, navigation }) {
     const deleteRecipe = (item) => {
         console.log('item', item)
         console.log('item.key', item.key)
-        
+
         Alert.alert(
             'Deleting a recipe',
             `Are you sure you want to delete ${item.name}?`,
             [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel'
-              },
-              { 
-                text: 'OK', 
-                onPress: () => {
-                    console.log('OK Pressed');
-                    firebase.database().ref('items/').child(item.key).remove() 
-                    listRecipesFromDb(); 
-                    Alert.alert(`${item.name} deleted`) 
-                    } 
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        console.log('OK Pressed');
+                        firebase.database().ref('items/').child(item.key).remove()
+                        listRecipesFromDb();
+                        Alert.alert(`${item.name} deleted`)
+                    }
                 }
             ],
             { cancelable: false }
-          );
+        )
     }
+
+    const shareMenus = async () => {
+        const menus = DATA
+            .filter(item => item.data[0] != undefined && item.title != 'Other recipes')
+            .map(item => ' **' + item.title + '** ' + item.data + '. ')
+
+        //console.log(menus)
+
+        try {
+            const result = await Share.share({
+                message: `Here are my menus! ${menus}`,
+                title: 'My menus'
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    console.log('shared with activity type of result.activityType')
+                } else {
+                    console.log('shared')
+                }
+            } else if (result.action === Share.dismissedAction) {
+                console.log('Share was dismissed');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
 
     const DATA = [
         {
@@ -116,7 +142,7 @@ export default function EditMenus({ route, navigation }) {
     ]
 
     const Item = ({ item }) => (
-        <Pressable 
+        <Pressable
             onPress={() => navigation.navigate('Recipe', { item: items.find(i => i.weekday + ': ' + i.name == item) })}
             onLongPress={() => deleteRecipe(items.find(i => i.weekday + ': ' + i.name == item))}
         >
@@ -140,7 +166,6 @@ export default function EditMenus({ route, navigation }) {
     }
 
     return (
-
         <View style={styles.container}>
             {/*console.log('data', DATA)}
         {console.log('week1', week1)*/}
@@ -153,7 +178,12 @@ export default function EditMenus({ route, navigation }) {
                 renderSectionHeader={({ section: { title } }) => (
                     <Text style={styles.h1}>{title}</Text>
                 )}
+            />
 
+            <Button
+                color='#704270'
+                title='SHARE'
+                onPress={shareMenus}
             />
         </View>
     )
@@ -179,5 +209,5 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 10,
         marginTop: 10
-    } 
+    }
 });
