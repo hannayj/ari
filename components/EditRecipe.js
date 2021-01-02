@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, SectionList, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList, ImageBackground, Platform } from 'react-native';
 import firebase from '../util/firebase'
 import LoadingView from './LoadingView'
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 
 export default function EditRecipe({ route, navigation }) {
     const { item } = route.params
@@ -9,6 +11,10 @@ export default function EditRecipe({ route, navigation }) {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        getRecipe()
+    }, [])
+
+    const getRecipe = () => {
         firebase.database().ref('items/').on('value', snapshot => {
             const data = snapshot.val()
             //console.log(data)
@@ -17,7 +23,51 @@ export default function EditRecipe({ route, navigation }) {
             //console.log('item', item)
             setRecipe(prods[0])
         })
-    }, [])
+    }
+
+    getPermissionAsync = async () => {
+        if (Platform.OS !== 'web') {
+            const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    const pickImage = async () => {
+
+        getPermissionAsync()
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        //console.log(result.uri);
+
+        if (!result.cancelled) {
+            setRecipe({ ...recipe, image: result.uri })
+            firebase.database().ref('items/').child(recipe.key).update(
+                {
+                    'image': result.uri,
+                }
+            )
+            getRecipe()
+        }
+    };
+
+    /*const wwwImage = () => {
+        let wwwImage = "https://cdn.valio.fi/mediafiles/5a9da7b8-7ffd-474d-96d6-72261286615b/1600x1200-recipe-data/4x3/perinteinen-jauhelihakastike.jpg"
+        setRecipe({ ...recipe, image: wwwImage })
+        firebase.database().ref('items/').child(recipe.key).update(
+            {
+                'image': wwwImage,
+            }
+        )
+        getRecipe()
+    }*/
 
     const DATA = [
         {
@@ -52,7 +102,7 @@ export default function EditRecipe({ route, navigation }) {
                 ListFooterComponent={
                     <ImageBackground
                         style={styles.image}
-                        source={{ uri: item.image, }}
+                        source={{ uri: recipe.image }}
                         onLoadStart={() => setLoading(true)}
                         onLoadEnd={() => setLoading(false)}
                     >
@@ -74,6 +124,18 @@ export default function EditRecipe({ route, navigation }) {
                     title='EDIT RECIPE'
                     onPress={() => navigation.navigate('Edit Ingredients', { item: recipe })}
                 />
+
+                <Button
+                    color='#704270'
+                    title='CHANGE IMAGE'
+                    onPress={pickImage}
+                />
+
+                {/*<Button
+                    color='#704270'
+                    title='WWW'
+                    onPress={wwwImage}
+                />*/}
             </View>
         </View>
     )
