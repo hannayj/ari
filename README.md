@@ -8,3 +8,13 @@ The recipes can be brought to the app straight from the Internet just by giving 
 
 ## Running the app
 In order to test the app you need to establish the keys to the database and MyCookbook API in a app.congif.js-file - see app.config.sample.js for instructions. After that it's just _expo start_ in the folder with the files.
+
+## Database structure
+Items
+* Key
+    * image: string or an array if used image from the device
+    * ingredients: array
+    * instructions: array
+    * name: string
+    * weekday: string (if defined)
+    * weeknumber: integer (if defined)
