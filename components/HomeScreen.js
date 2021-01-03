@@ -1,8 +1,5 @@
 import React from 'react';
-//import { Button } from 'react-native-elements';
 import { StyleSheet, Text, View, Button} from 'react-native';
-import { color } from 'react-native-reanimated';
-//import { Button } from 'react-native-elements';
 
 export default function HomeScreen({ navigation }) {
     return (
