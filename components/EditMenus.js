@@ -171,7 +171,7 @@ export default function EditMenus({ route, navigation }) {
         {console.log('week1', week1)*/}
 
             <SectionList
-                sections={DATA}
+                sections={DATA.filter(item => item.data[0] != undefined)}
                 keyExtractor={(item, index) => item + index}
                 ItemSeparatorComponent={listSeparator}
                 renderItem={({ item }) => <Item item={item} />}
