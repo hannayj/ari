@@ -178,6 +178,7 @@ export default function EditMenus({ route, navigation }) {
                 renderSectionHeader={({ section: { title } }) => (
                     <Text style={styles.h1}>{title}</Text>
                 )}
+                stickySectionHeadersEnabled={false}
             />
 
             <Button

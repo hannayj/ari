@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard } from 'reac
 import firebase from '../util/firebase'
 import Constants from 'expo-constants';
 
-export default function AddNewRecipe({ route, navigation }) {
+export default function AddNewRecipe() {
     const [url, setUrl] = useState('')
 
     const fetchRecipeInfo = () => {
@@ -32,7 +32,7 @@ export default function AddNewRecipe({ route, navigation }) {
                     weeknumber: null
                 }
                 Keyboard.dismiss()
-                saveItem(recipe)
+                saveToDatabase(recipe)
             })
 
             .catch(error => {
@@ -40,7 +40,7 @@ export default function AddNewRecipe({ route, navigation }) {
             });
     }
 
-    const saveItem = (recipe) => {
+    const saveToDatabase = (recipe) => {
         //console.log(recipe)
         firebase.database().ref('items/').push(
             {
@@ -52,20 +52,8 @@ export default function AddNewRecipe({ route, navigation }) {
                 'weeknumber': null
             }
         )
-        getKey()
-    }
-
-    const getKey = () => {
-        firebase.database().ref('items/').on('value', snapshot => {
-            const data = snapshot.val()
-            //console.log(data)
-            const prods = Object.keys(data).map(key => ({ key, ...data[key] }))
-            //console.log('prod', prods[prods.length - 1])
-
-            Alert.alert('Recipe saved')
-            navigation.navigate('Recipe', { item: prods[prods.length - 1] })
-        }
-        )
+        Alert.alert('Recipe saved')
+        setUrl('')
     }
 
     return (
