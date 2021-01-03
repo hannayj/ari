@@ -52,10 +52,6 @@ export default function EditMenuInfo({ route, navigation }) {
         } else {
             firebase.database().ref('items/').child(recipe.key).update(
                 {
-                    'name': recipe.name,
-                    'ingredients': recipe.ingredients,
-                    'instructions': recipe.instructions,
-                    'image': recipe.image,
                     'weekday': weekday,
                     'weeknumber': weeknumber
                 }
