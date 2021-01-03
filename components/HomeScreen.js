@@ -16,7 +16,7 @@ export default function HomeScreen({ navigation }) {
                 />
                 <Button
                     color='#704270'
-                    title='Edit menus'
+                    title='Menus and recipes'
                     onPress={() => navigation.navigate('Menus')}
                 />
                 <Button
