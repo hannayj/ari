@@ -70,7 +70,7 @@ export default function AddNewRecipe({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text>Add new recipe by giving the URL of the recipe</Text>
+            <Text style={styles.text}>Add new recipe by giving the URL of the recipe</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={url => setUrl(url)}
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     input: {
         width: '95%',
@@ -99,4 +99,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
     },
+    text: {
+        fontSize: 18,
+    }
 });
