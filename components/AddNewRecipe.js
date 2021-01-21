@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TextInput, Alert, Keyboard } from 'reac
 import firebase from '../util/firebase'
 import Constants from 'expo-constants';
 
-export default function AddNewRecipe() {
+export default function AddNewRecipe({ navigation }) {
     const [url, setUrl] = useState('')
 
     const fetchRecipeInfo = () => {
@@ -68,6 +68,11 @@ export default function AddNewRecipe() {
                 color='#704270'
                 title='ADD'
                 onPress={fetchRecipeInfo}
+            />
+            <Button
+                color='#704270'
+                title='GO TO RECIPES'
+                onPress={() => navigation.navigate('Menus')}
             />
         </View>
     )
