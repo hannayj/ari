@@ -20,7 +20,11 @@ export default function EditInstructions({ route, navigation }) {
                 'instructions': recipe.instructions,
             }
         )
-        //Alert.alert('Changes saved to database')
+        Alert.alert('Changes saved')
+        
+    }
+    
+    const nextPage = () => {
         navigation.navigate('Edit Menu Info', { item: recipe })
     }
 
@@ -56,8 +60,13 @@ export default function EditInstructions({ route, navigation }) {
                     <View style={styles.buttonContainer}>
                         <Button
                             color='#704270'
-                            title='SAVE CHANGES'
+                            title='SAVE'
                             onPress={saveItem}
+                        />
+                        <Button
+                            color='#704270'
+                            title='NEXT'
+                            onPress={nextPage}
                         />
                         <Button
                             color='#704270'
